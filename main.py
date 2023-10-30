@@ -38,6 +38,13 @@ def main():
         with open(f"{store_name}.pkl", "rb") as f:
             pickle.dump(vector_store, f)
 
+        query = streamlit.text_input("Ask questions about your PDF file:")
+        # streamlit.write(query)
+
+        if query:
+            docs = vector_store.similarity_search(query=query, k=3)
+            streamlit.write(docs)
+
 
 if __name__ == '__main__':
     main()
