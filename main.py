@@ -1,6 +1,12 @@
 import streamlit
 from PyPDF2 import PdfReader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
+from dotenv import load_dotenv
+from langchain.embeddings.openai import OpenAIEmbeddings
+from langchain.vectorstores import FAISS
+import pickle
+
+load_dotenv()
 
 
 def main():
@@ -22,7 +28,15 @@ def main():
         )
 
         chunks = text_splitter.split_text(text=text)
-        streamlit.write(chunks)
+        # streamlit.write(chunks)
+
+        store_name = pdf.name[:-4]
+        streamlit.write(store_name)
+
+        embeddings = OpenAIEmbeddings()
+        vector_store = FAISS.from_texts(chunks, embedding=embeddings)
+        with open(f"{store_name}.pkl", "rb") as f:
+            pickle.dump(vector_store, f)
 
 
 if __name__ == '__main__':
