@@ -47,8 +47,8 @@ def main():
             docs = vector_store.similarity_search(query=query, k=3)
             streamlit.write(docs)
 
-            llm = OpenAI()
-            chain = load_qa_chain(llm=llm, chain_type="pdf")
+            llm = OpenAI(model_name="gpt-3.5-turbo")
+            chain = load_qa_chain(llm=llm, chain_type="stuff")
 
             response = chain.run(input_documents=docs, question=query)
             streamlit.write(response)
