@@ -5,6 +5,8 @@ from dotenv import load_dotenv
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.vectorstores import FAISS
 import pickle
+from langchain.llms import OpenAI
+from langchain.chains.question_answering import load_qa_chain
 
 load_dotenv()
 
@@ -44,6 +46,12 @@ def main():
         if query:
             docs = vector_store.similarity_search(query=query, k=3)
             streamlit.write(docs)
+
+            llm = OpenAI()
+            chain = load_qa_chain(llm=llm, chain_type="pdf")
+
+            response = chain.run(input_documents=docs, question=query)
+            streamlit.write(response)
 
 
 if __name__ == '__main__':
