@@ -1,14 +1,19 @@
+import os
+
 import streamlit
+import joblib
 from PyPDF2 import PdfReader
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from dotenv import load_dotenv
-from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.vectorstores import FAISS
-import pickle
-from langchain.llms import OpenAI
 from langchain.chains.question_answering import load_qa_chain
+import google.generativeai as palm
+from langchain.embeddings import GooglePalmEmbeddings
+from langchain.llms import GooglePalm
 
 load_dotenv()
+api_key = os.getenv("GOOGLE_API_KEY")
+palm.configure(api_key=api_key)
 
 
 def main():
@@ -35,19 +40,20 @@ def main():
         store_name = pdf.name[:-4]
         streamlit.write(store_name)
 
-        embeddings = OpenAIEmbeddings()
+        embeddings = GooglePalmEmbeddings(model_name="models/embedding-gecko-001")
         vector_store = FAISS.from_texts(chunks, embedding=embeddings)
-        with open(f"{store_name}.pkl", "rb") as f:
-            pickle.dump(vector_store, f)
+        # with open(f"{store_name}.json", "w") as f:
+        #  joblib.dump(vector_store, f)
+        # joblib.dump(vector_store, f"{store_name}.joblib")
 
         query = streamlit.text_input("Ask questions about your PDF file:")
         # streamlit.write(query)
 
         if query:
             docs = vector_store.similarity_search(query=query, k=3)
-            streamlit.write(docs)
+            # streamlit.write(docs)
 
-            llm = OpenAI(model_name="gpt-3.5-turbo")
+            llm = GooglePalm(model_name="models/text-bison-001")
             chain = load_qa_chain(llm=llm, chain_type="stuff")
 
             response = chain.run(input_documents=docs, question=query)
