@@ -1,5 +1,7 @@
 # Google-PaLM-basic-chat-with-pdf
-Basic QnA app with PDF using Google PaLM2
+Basic QnA app with PDF using Google PaLM
+
+* Blog post: https://hynra.medium.com/ai-chat-pdf-dengan-google-palm-model-80fd3204e5ca
 
 * Create Google PaLM API key here: https://makersuite.google.com/app/apikey
 
